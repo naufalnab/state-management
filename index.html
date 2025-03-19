@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trello Sederhana</title>
+    <title>Trello Guru Modern</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             margin: 0;
             padding: 20px;
+            color: #fff;
         }
         .board {
             display: flex;
@@ -18,45 +19,95 @@
             margin: 0 auto;
         }
         .column {
-            background-color: #ebecf0;
-            border-radius: 8px;
-            width: 300px;
-            padding: 10px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            min-height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            width: 320px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-height: 200px;
+            transition: transform 0.3s ease;
+        }
+        .column:hover {
+            transform: translateY(-5px);
         }
         .column h2 {
-            font-size: 18px;
-            margin: 0 0 10px;
-            padding: 5px;
+            font-size: 20px;
+            margin: 0 0 15px;
+            padding: 8px;
             text-align: center;
-            color: #172b4d;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .card {
-            background-color: white;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             cursor: move;
             user-select: none;
+            color: #333;
+            position: relative;
+            transition: all 0.3s ease;
         }
         .card:hover {
-            background-color: #f9f9f9;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
         }
         .card.dragging {
-            opacity: 0.5;
+            opacity: 0.6;
+            transform: scale(0.98);
+        }
+        .card-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .card-buttons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .card-buttons button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        .edit-btn {
+            background: #4caf50;
+        }
+        .edit-btn:hover {
+            background: #45a049;
+        }
+        .delete-btn {
+            background: #f44336;
+        }
+        .delete-btn:hover {
+            background: #da190b;
         }
         .add-card {
-            color: #5e6c84;
+            color: #fff;
             text-align: center;
-            padding: 5px;
+            padding: 10px;
             cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
         .add-card:hover {
-            color: #172b4d;
-            background-color: #dfe1e6;
-            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
@@ -65,44 +116,127 @@
         <!-- Kolom Submit -->
         <div class="column" id="submit">
             <h2>Submit</h2>
-            <div class="card" draggable="true">Tugas 1: Desain UI</div>
-            <div class="card" draggable="true">Tugas 2: Koneksi DB</div>
-            <div class="add-card">+ Tambah Tugas</div>
+            <div class="card" draggable="true">
+                <div class="card-content">
+                    <strong>Tahun Ajar:</strong> 2024/2025<br>
+                    <strong>Semester:</strong> Ganjil<br>
+                    <strong>Pelajaran:</strong> Matematika<br>
+                    <strong>Kelas:</strong> X-A<br>
+                    <strong>Pengajar:</strong> Budi Santoso<br>
+                    <strong>Tipe:</strong> RPP
+                </div>
+                <div class="card-buttons">
+                    <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                    <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
+                </div>
+            </div>
+            <div class="add-card" onclick="addCard('submit')">+ Tambah Tugas</div>
         </div>
 
         <!-- Kolom Confirm -->
         <div class="column" id="confirm">
             <h2>Confirm</h2>
-            <div class="card" draggable="true">Tugas 3: Testing</div>
-            <div class="add-card">+ Tambah Tugas</div>
+            <div class="card" draggable="true">
+                <div class="card-content">
+                    <strong>Tahun Ajar:</strong> 2024/2025<br>
+                    <strong>Semester:</strong> Genap<br>
+                    <strong>Pelajaran:</strong> Bahasa Inggris<br>
+                    <strong>Kelas:</strong> XI-B<br>
+                    <strong>Pengajar:</strong> Siti Aminah<br>
+                    <strong>Tipe:</strong> Soal
+                </div>
+                <div class="card-buttons">
+                    <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                    <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
+                </div>
+            </div>
+            <div class="add-card" onclick="addCard('confirm')">+ Tambah Tugas</div>
         </div>
     </div>
 
     <script>
+        // Drag and Drop
         const cards = document.querySelectorAll('.card');
         const columns = document.querySelectorAll('.column');
 
-        cards.forEach(card => {
-            card.addEventListener('dragstart', () => {
-                card.classList.add('dragging');
+        function setupDragAndDrop() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('dragstart', () => {
+                    card.classList.add('dragging');
+                });
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                });
             });
 
-            card.addEventListener('dragend', () => {
-                card.classList.remove('dragging');
+            columns.forEach(column => {
+                column.addEventListener('dragover', e => {
+                    e.preventDefault();
+                });
+                column.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const draggable = document.querySelector('.dragging');
+                    column.insertBefore(draggable, column.querySelector('.add-card'));
+                });
             });
-        });
+        }
 
-        columns.forEach(column => {
-            column.addEventListener('dragover', e => {
-                e.preventDefault(); // Allow drop
-            });
+        setupDragAndDrop();
 
-            column.addEventListener('drop', e => {
-                e.preventDefault();
-                const draggable = document.querySelector('.dragging');
-                column.appendChild(draggable);
-            });
-        });
+        // Edit Card
+        function editCard(button) {
+            const card = button.closest('.card');
+            const content = card.querySelector('.card-content');
+            const currentData = content.innerHTML.split('<br>').map(line => line.replace(/<strong>.*:<\/strong>\s*/, '').trim());
+
+            const newData = prompt('Edit data (pisahkan dengan baris baru):\nTahun Ajar\nSemester\nPelajaran\nKelas\nPengajar\nTipe', currentData.join('\n'));
+            if (newData) {
+                const [tahun, semester, pelajaran, kelas, pengajar, tipe] = newData.split('\n');
+                content.innerHTML = `
+                    <strong>Tahun Ajar:</strong> ${tahun}<br>
+                    <strong>Semester:</strong> ${semester}<br>
+                    <strong>Pelajaran:</strong> ${pelajaran}<br>
+                    <strong>Kelas:</strong> ${kelas}<br>
+                    <strong>Pengajar:</strong> ${pengajar}<br>
+                    <strong>Tipe:</strong> ${tipe}
+                `;
+            }
+        }
+
+        // Delete Card
+        function deleteCard(button) {
+            if (confirm('Hapus kartu ini?')) {
+                button.closest('.card').remove();
+            }
+        }
+
+        // Add Card
+        function addCard(columnId) {
+            const column = document.getElementById(columnId);
+            const newData = prompt('Masukkan data baru (pisahkan dengan baris baru):\nTahun Ajar\nSemester\nPelajaran\nKelas\nPengajar\nTipe', '2024/2025\nGanjil\n-\n-\n-\n-');
+            if (newData) {
+                const [tahun, semester, pelajaran, kelas, pengajar, tipe] = newData.split('\n');
+                const newCard = document.createElement('div');
+                newCard.className = 'card';
+                newCard.draggable = true;
+                newCard.innerHTML = `
+                    <div class="card-content">
+                        <strong>Tahun Ajar:</strong> ${tahun}<br>
+                        <strong>Semester:</strong> ${semester}<br>
+                        <strong>Pelajaran:</strong> ${pelajaran}<br>
+                        <strong>Kelas:</strong> ${kelas}<br>
+                        <strong>Pengajar:</strong> ${pengajar}<br>
+                        <strong>Tipe:</strong> ${tipe}
+                    </div>
+                    <div class="card-buttons">
+                        <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                        <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
+                    </div>
+                `;
+                column.insertBefore(newCard, column.querySelector('.add-card'));
+                setupDragAndDrop(); // Re-apply drag-and-drop untuk kartu baru
+            }
+        }
     </script>
 </body>
 </html>
