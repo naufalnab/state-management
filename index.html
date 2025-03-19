@@ -23,6 +23,7 @@
             width: 300px;
             padding: 10px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-height: 100px;
         }
         .column h2 {
             font-size: 18px;
@@ -37,10 +38,14 @@
             padding: 10px;
             margin-bottom: 10px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
+            cursor: move;
+            user-select: none;
         }
         .card:hover {
             background-color: #f9f9f9;
+        }
+        .card.dragging {
+            opacity: 0.5;
         }
         .add-card {
             color: #5e6c84;
@@ -58,19 +63,46 @@
 <body>
     <div class="board">
         <!-- Kolom Submit -->
-        <div class="column">
+        <div class="column" id="submit">
             <h2>Submit</h2>
-            <div class="card">Tugas 1: Desain UI</div>
-            <div class="card">Tugas 2: Koneksi DB</div>
+            <div class="card" draggable="true">Tugas 1: Desain UI</div>
+            <div class="card" draggable="true">Tugas 2: Koneksi DB</div>
             <div class="add-card">+ Tambah Tugas</div>
         </div>
 
         <!-- Kolom Confirm -->
-        <div class="column">
+        <div class="column" id="confirm">
             <h2>Confirm</h2>
-            <div class="card">Tugas 3: Testing</div>
+            <div class="card" draggable="true">Tugas 3: Testing</div>
             <div class="add-card">+ Tambah Tugas</div>
         </div>
     </div>
+
+    <script>
+        const cards = document.querySelectorAll('.card');
+        const columns = document.querySelectorAll('.column');
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', () => {
+                card.classList.add('dragging');
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+            });
+        });
+
+        columns.forEach(column => {
+            column.addEventListener('dragover', e => {
+                e.preventDefault(); // Allow drop
+            });
+
+            column.addEventListener('drop', e => {
+                e.preventDefault();
+                const draggable = document.querySelector('.dragging');
+                column.appendChild(draggable);
+            });
+        });
+    </script>
 </body>
 </html>
