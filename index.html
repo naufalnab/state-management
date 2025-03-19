@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello Sederhana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .board {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .column {
+            background-color: #ebecf0;
+            border-radius: 8px;
+            width: 300px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .column h2 {
+            font-size: 18px;
+            margin: 0 0 10px;
+            padding: 5px;
+            text-align: center;
+            color: #172b4d;
+        }
+        .card {
+            background-color: white;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .card:hover {
+            background-color: #f9f9f9;
+        }
+        .add-card {
+            color: #5e6c84;
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+        }
+        .add-card:hover {
+            color: #172b4d;
+            background-color: #dfe1e6;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="board">
+        <!-- Kolom Submit -->
+        <div class="column">
+            <h2>Submit</h2>
+            <div class="card">Tugas 1: Desain UI</div>
+            <div class="card">Tugas 2: Koneksi DB</div>
+            <div class="add-card">+ Tambah Tugas</div>
+        </div>
+
+        <!-- Kolom Confirm -->
+        <div class="column">
+            <h2>Confirm</h2>
+            <div class="card">Tugas 3: Testing</div>
+            <div class="add-card">+ Tambah Tugas</div>
+        </div>
+    </div>
+</body>
+</html>
