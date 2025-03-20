@@ -327,10 +327,18 @@
         function openEditModal(button) {
             currentCard = button.closest('.card');
             const content = currentCard.querySelector('.card-content');
-            const data = Array.from(content.querySelectorAll('div:not(.sub-section) div, .sub-section div'))
-                .map(div => div.textContent.replace(/.*?:\s*/, '').trim());
+            const mainFields = Array.from(content.children).filter(div => !div.classList.contains('sub-section'));
+            const subSection = content.querySelector('.sub-section');
+            const subFields = subSection ? Array.from(subSection.children) : [];
 
-            const [tanggal, kelas, sakit, ijin, bolos, , doText, doingText, doneText] = data;
+            const tanggal = mainFields[0].textContent.replace('Tanggal: ', '');
+            const kelas = mainFields[1].textContent.replace('Kelas: ', '');
+            const sakit = mainFields[2].textContent.replace('Sakit: ', '');
+            const ijin = mainFields[3].textContent.replace('Ijin: ', '');
+            const bolos = mainFields[4].textContent.replace('Bolos: ', '');
+            const doText = subFields[0] ? subFields[0].textContent.replace('Do: ', '') : '';
+            const doingText = subFields[1] ? subFields[1].textContent.replace('Doing: ', '') : '';
+            const doneText = subFields[2] ? subFields[2].textContent.replace('Done: ', '') : '';
 
             document.getElementById('modalTitle').textContent = 'Edit Jurnal';
             document.getElementById('tanggal').value = tanggal;
