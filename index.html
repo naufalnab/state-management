@@ -29,6 +29,7 @@
                 <div class="card-buttons">
                     <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
+                    <button class="confirm-btn mobile-only" onclick="confirmCard(this)">✓</button>
                 </div>
             </div>
             <div class="add-card" onclick="openAddModal('submitted')">+ Tambah Jurnal</div>
@@ -52,10 +53,12 @@
                         <div><strong>Done:</strong> 85% target prosem tahunan tercapai</div>
                     </div>
                     <div><strong>Dikonfirmasi oleh:</strong> Pak Joko</div>
+                    <div><strong>Waktu:</strong> 20 Maret 2025 10:30</div>
                 </div>
                 <div class="card-buttons">
                     <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
+                    <button class="unconfirm-btn mobile-only" onclick="unconfirmCard(this)">✗</button>
                 </div>
             </div>
             <div class="add-card" onclick="openAddModal('confirmed')">+ Tambah Jurnal</div>
@@ -86,6 +89,8 @@
             <textarea id="done" placeholder="Pencapaian vs prosem..."></textarea>
             <label for="confirmedBy" id="confirmedByLabel" style="display: none;">Dikonfirmasi oleh:</label>
             <input type="text" id="confirmedBy" placeholder="Nama pengonfirmasi" style="display: none;">
+            <label for="confirmedTime" id="confirmedTimeLabel" style="display: none;">Waktu Konfirmasi:</label>
+            <input type="text" id="confirmedTime" placeholder="DD MMMM YYYY HH:MM" style="display: none;" readonly>
             <div class="modal-buttons">
                 <button class="cancel-btn" onclick="closeModal()">Batal</button>
                 <button class="save-btn" id="saveButton">Simpan</button>

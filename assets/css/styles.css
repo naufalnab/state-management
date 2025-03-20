@@ -5,12 +5,14 @@ body {
     padding: 20px;
     color: #fff;
 }
+
 .board {
     display: flex;
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
+
 .column {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
@@ -21,9 +23,11 @@ body {
     min-height: 200px;
     transition: transform 0.3s ease;
 }
+
 .column:hover {
     transform: translateY(-5px);
 }
+
 .column h2 {
     font-size: 20px;
     margin: 0 0 15px;
@@ -35,6 +39,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 1.2px;
 }
+
 .card {
     background: #fff;
     border-radius: 8px;
@@ -47,32 +52,40 @@ body {
     position: relative;
     transition: all 0.3s ease;
 }
+
 .card:hover {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
     transform: translateY(-3px);
 }
+
 .card.dragging {
     opacity: 0.6;
     transform: scale(0.98);
 }
+
 .card-content {
     font-size: 14px;
     line-height: 1.6;
 }
+
 .card-content div {
     margin-bottom: 8px;
 }
+
 .card-content strong {
     color: #2c3e50;
 }
+
 .sub-section {
     margin-top: 10px;
     padding-left: 10px;
     border-left: 2px solid #3498db;
 }
+
 .sub-section div {
     margin-bottom: 8px;
 }
+
 .card-buttons {
     position: absolute;
     top: 10px;
@@ -80,6 +93,7 @@ body {
     display: flex;
     gap: 5px;
 }
+
 .card-buttons button {
     background: none;
     border: none;
@@ -92,18 +106,41 @@ body {
     font-size: 12px;
     transition: all 0.3s ease;
 }
+
 .edit-btn {
     background: #27ae60;
 }
+
 .edit-btn:hover {
     background: #219653;
 }
+
 .delete-btn {
     background: #e74c3c;
 }
+
 .delete-btn:hover {
     background: #c0392b;
 }
+
+.confirm-btn {
+    background: #3498db;
+    display: none; /* Sembunyikan di desktop */
+}
+
+.confirm-btn:hover {
+    background: #2980b9;
+}
+
+.unconfirm-btn {
+    background: #e74c3c;
+    display: none; /* Sembunyikan di desktop */
+}
+
+.unconfirm-btn:hover {
+    background: #c0392b;
+}
+
 .add-card {
     color: #fff;
     text-align: center;
@@ -113,6 +150,7 @@ body {
     border-radius: 8px;
     transition: all 0.3s ease;
 }
+
 .add-card:hover {
     background: rgba(255, 255, 255, 0.35);
 }
@@ -130,6 +168,7 @@ body {
     align-items: center;
     z-index: 1000;
 }
+
 .modal-content {
     background: #fff;
     border-radius: 12px;
@@ -139,23 +178,30 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     color: #333;
     animation: slideIn 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
 }
+
 @keyframes slideIn {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
 .modal-content h3 {
     margin: 0 0 20px;
     color: #2c3e50;
     text-align: center;
 }
+
 .modal-content label {
     display: block;
     margin: 10px 0 5px;
     font-weight: bold;
     color: #2c3e50;
 }
-.modal-content input, .modal-content textarea {
+
+.modal-content input,
+.modal-content textarea {
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
@@ -164,15 +210,18 @@ body {
     box-sizing: border-box;
     font-size: 14px;
 }
+
 .modal-content textarea {
     height: 60px;
     resize: vertical;
 }
+
 .modal-buttons {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
 }
+
 .modal-buttons button {
     padding: 8px 15px;
     border: none;
@@ -181,17 +230,96 @@ body {
     font-size: 14px;
     transition: all 0.3s ease;
 }
+
 .save-btn {
     background: #3498db;
     color: #fff;
 }
+
 .save-btn:hover {
     background: #2980b9;
 }
+
 .cancel-btn {
     background: #ecf0f1;
     color: #333;
 }
+
 .cancel-btn:hover {
     background: #dfe6e9;
+}
+
+/* Media Queries untuk Mobile */
+@media (max-width: 767px) {
+    body {
+        padding: 10px;
+    }
+
+    .board {
+        flex-direction: column; /* Kolom jadi vertikal */
+        gap: 15px;
+    }
+
+    .column {
+        width: 100%; /* Full width di mobile */
+        padding: 10px;
+    }
+
+    .column h2 {
+        font-size: 1.2rem;
+    }
+
+    .card {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .card-content {
+        font-size: 0.9rem;
+    }
+
+    .card-buttons {
+        top: 5px;
+        right: 5px;
+    }
+
+    .card-buttons button {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+
+    .mobile-only {
+        display: inline-block; /* Tampilkan tombol centang/silang di mobile */
+    }
+
+    .add-card {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        padding: 15px;
+        width: 100%;
+        max-width: 95%;
+    }
+
+    .modal-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .modal-content label {
+        font-size: 0.9rem;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+        padding: 6px;
+        font-size: 0.9rem;
+    }
+
+    .modal-buttons button {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
 }

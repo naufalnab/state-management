@@ -1,28 +1,31 @@
-// Drag and Drop
+// Drag and Drop (Desktop Only)
 function setupDragAndDrop() {
-    document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('dragstart', () => {
-            card.classList.add('dragging');
+    if (window.innerWidth >= 768) { // Hanya aktif di desktop
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('dragstart', () => {
+                card.classList.add('dragging');
+            });
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+            });
         });
-        card.addEventListener('dragend', () => {
-            card.classList.remove('dragging');
-        });
-    });
 
-    document.querySelectorAll('.column').forEach(column => {
-        column.addEventListener('dragover', e => {
-            e.preventDefault();
+        document.querySelectorAll('.column').forEach(column => {
+            column.addEventListener('dragover', e => {
+                e.preventDefault();
+            });
+            column.addEventListener('drop', e => {
+                e.preventDefault();
+                const draggable = document.querySelector('.dragging');
+                column.insertBefore(draggable, column.querySelector('.add-card'));
+                updateConfirmedBy(draggable, column.id);
+            });
         });
-        column.addEventListener('drop', e => {
-            e.preventDefault();
-            const draggable = document.querySelector('.dragging');
-            column.insertBefore(draggable, column.querySelector('.add-card'));
-            updateConfirmedBy(draggable, column.id);
-        });
-    });
+    }
 }
 
 setupDragAndDrop();
+window.addEventListener('resize', setupDragAndDrop); // Re-apply saat ukuran berubah
 
 // Modal Handling
 const modal = document.getElementById('jurnalModal');
@@ -34,7 +37,7 @@ function openAddModal(columnId) {
     currentCard = null;
     document.getElementById('modalTitle').textContent = 'Tambah Jurnal';
     clearModalFields();
-    toggleConfirmedByField(columnId);
+    toggleConfirmedFields(columnId);
     modal.style.display = 'flex';
     document.getElementById('saveButton').onclick = saveNewCard;
 }
@@ -56,6 +59,7 @@ function openEditModal(button) {
     const doingText = subFields[1] ? subFields[1].textContent.replace('Doing: ', '') : '';
     const doneText = subFields[2] ? subFields[2].textContent.replace('Done: ', '') : '';
     const confirmedBy = mainFields.find(div => div.textContent.startsWith('Dikonfirmasi oleh:'))?.textContent.replace('Dikonfirmasi oleh: ', '') || '';
+    const confirmedTime = mainFields.find(div => div.textContent.startsWith('Waktu:'))?.textContent.replace('Waktu: ', '') || '';
 
     document.getElementById('modalTitle').textContent = 'Edit Jurnal';
     document.getElementById('namaGuru').value = namaGuru;
@@ -68,8 +72,9 @@ function openEditModal(button) {
     document.getElementById('doing').value = doingText;
     document.getElementById('done').value = doneText;
     document.getElementById('confirmedBy').value = confirmedBy;
+    document.getElementById('confirmedTime').value = confirmedTime;
 
-    toggleConfirmedByField(currentCard.closest('.column').id);
+    toggleConfirmedFields(currentCard.closest('.column').id);
     modal.style.display = 'flex';
     document.getElementById('saveButton').onclick = saveEditedCard;
 }
@@ -89,17 +94,24 @@ function clearModalFields() {
     document.getElementById('doing').value = '';
     document.getElementById('done').value = '';
     document.getElementById('confirmedBy').value = '';
+    document.getElementById('confirmedTime').value = '';
 }
 
-function toggleConfirmedByField(columnId) {
+function toggleConfirmedFields(columnId) {
     const confirmedByLabel = document.getElementById('confirmedByLabel');
     const confirmedByInput = document.getElementById('confirmedBy');
+    const confirmedTimeLabel = document.getElementById('confirmedTimeLabel');
+    const confirmedTimeInput = document.getElementById('confirmedTime');
     if (columnId === 'confirmed') {
         confirmedByLabel.style.display = 'block';
         confirmedByInput.style.display = 'block';
+        confirmedTimeLabel.style.display = 'block';
+        confirmedTimeInput.style.display = 'block';
     } else {
         confirmedByLabel.style.display = 'none';
         confirmedByInput.style.display = 'none';
+        confirmedTimeLabel.style.display = 'none';
+        confirmedTimeInput.style.display = 'none';
     }
 }
 
@@ -107,19 +119,73 @@ function updateConfirmedBy(card, columnId) {
     const content = card.querySelector('.card-content');
     const children = Array.from(content.children);
     const confirmedByDivIndex = children.findIndex(div => div.textContent.startsWith('Dikonfirmasi oleh:'));
+    const confirmedTimeDivIndex = children.findIndex(div => div.textContent.startsWith('Waktu:'));
 
     if (columnId === 'confirmed') {
-        if (confirmedByDivIndex === -1) { // Jika belum ada "Dikonfirmasi oleh"
+        if (confirmedByDivIndex === -1) {
             const newConfirmedBy = prompt('Masukkan nama pengonfirmasi:');
             if (newConfirmedBy) {
                 const confirmedByDiv = document.createElement('div');
                 confirmedByDiv.innerHTML = `<strong>Dikonfirmasi oleh:</strong> ${newConfirmedBy}`;
                 content.appendChild(confirmedByDiv);
+
+                const confirmedTimeDiv = document.createElement('div');
+                const now = new Date();
+                const timeString = now.toLocaleString('id-ID', { 
+                    day: '2-digit', 
+                    month: 'long', 
+                    year: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                confirmedTimeDiv.innerHTML = `<strong>Waktu:</strong> ${timeString}`;
+                content.appendChild(confirmedTimeDiv);
             }
         }
-    } else if (columnId === 'submitted' && confirmedByDivIndex !== -1) { // Jika digeser ke Submitted dan ada "Dikonfirmasi oleh"
-        children[confirmedByDivIndex].remove();
+    } else if (columnId === 'submitted') {
+        if (confirmedByDivIndex !== -1) children[confirmedByDivIndex].remove();
+        if (confirmedTimeDivIndex !== -1) children[confirmedTimeDivIndex].remove();
     }
+}
+
+function confirmCard(button) {
+    const card = button.closest('.card');
+    const confirmedColumn = document.getElementById('confirmed');
+    const newConfirmedBy = prompt('Masukkan nama pengonfirmasi:');
+    if (newConfirmedBy) {
+        const content = card.querySelector('.card-content');
+        const confirmedByDiv = document.createElement('div');
+        confirmedByDiv.innerHTML = `<strong>Dikonfirmasi oleh:</strong> ${newConfirmedBy}`;
+        content.appendChild(confirmedByDiv);
+
+        const confirmedTimeDiv = document.createElement('div');
+        const now = new Date();
+        const timeString = now.toLocaleString('id-ID', { 
+            day: '2-digit', 
+            month: 'long', 
+            year: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        confirmedTimeDiv.innerHTML = `<strong>Waktu:</strong> ${timeString}`;
+        content.appendChild(confirmedTimeDiv);
+
+        confirmedColumn.insertBefore(card, confirmedColumn.querySelector('.add-card'));
+    }
+}
+
+function unconfirmCard(button) {
+    const card = button.closest('.card');
+    const submittedColumn = document.getElementById('submitted');
+    const content = card.querySelector('.card-content');
+    const children = Array.from(content.children);
+    const confirmedByDivIndex = children.findIndex(div => div.textContent.startsWith('Dikonfirmasi oleh:'));
+    const confirmedTimeDivIndex = children.findIndex(div => div.textContent.startsWith('Waktu:'));
+
+    if (confirmedByDivIndex !== -1) children[confirmedByDivIndex].remove();
+    if (confirmedTimeDivIndex !== -1) children[confirmedTimeDivIndex].remove();
+
+    submittedColumn.insertBefore(card, submittedColumn.querySelector('.add-card'));
 }
 
 function saveNewCard() {
@@ -133,6 +199,7 @@ function saveNewCard() {
     const doingText = document.getElementById('doing').value;
     const doneText = document.getElementById('done').value;
     const confirmedBy = document.getElementById('confirmedBy').value;
+    const confirmedTime = document.getElementById('confirmedTime').value;
 
     if (namaGuru && tanggal && kelas) {
         const column = document.getElementById(currentColumnId);
@@ -154,10 +221,13 @@ function saveNewCard() {
                     <div><strong>Done:</strong> ${doneText || '-'}</div>
                 </div>
                 ${currentColumnId === 'confirmed' && confirmedBy ? `<div><strong>Dikonfirmasi oleh:</strong> ${confirmedBy}</div>` : ''}
+                ${currentColumnId === 'confirmed' && confirmedTime ? `<div><strong>Waktu:</strong> ${confirmedTime}</div>` : ''}
             </div>
             <div class="card-buttons">
                 <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                 <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
+                ${currentColumnId === 'submitted' ? '<button class="confirm-btn mobile-only" onclick="confirmCard(this)">✓</button>' : ''}
+                ${currentColumnId === 'confirmed' ? '<button class="unconfirm-btn mobile-only" onclick="unconfirmCard(this)">✗</button>' : ''}
             </div>
         `;
         column.insertBefore(newCard, column.querySelector('.add-card'));
@@ -179,6 +249,7 @@ function saveEditedCard() {
     const doingText = document.getElementById('doing').value;
     const doneText = document.getElementById('done').value;
     const confirmedBy = document.getElementById('confirmedBy').value;
+    const confirmedTime = document.getElementById('confirmedTime').value;
 
     if (namaGuru && tanggal && kelas) {
         const columnId = currentCard.closest('.column').id;
@@ -196,6 +267,13 @@ function saveEditedCard() {
                 <div><strong>Done:</strong> ${doneText || '-'}</div>
             </div>
             ${columnId === 'confirmed' && confirmedBy ? `<div><strong>Dikonfirmasi oleh:</strong> ${confirmedBy}</div>` : ''}
+            ${columnId === 'confirmed' && confirmedTime ? `<div><strong>Waktu:</strong> ${confirmedTime}</div>` : ''}
+        `;
+        currentCard.querySelector('.card-buttons').innerHTML = `
+            <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
+            <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
+            ${columnId === 'submitted' ? '<button class="confirm-btn mobile-only" onclick="confirmCard(this)">✓</button>' : ''}
+            ${columnId === 'confirmed' ? '<button class="unconfirm-btn mobile-only" onclick="unconfirmCard(this)">✗</button>' : ''}
         `;
         closeModal();
     } else {
