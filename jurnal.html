@@ -117,6 +117,85 @@
         .add-card:hover {
             background: rgba(255, 255, 255, 0.35);
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            color: #333;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-content h3 {
+            margin: 0 0 20px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .modal-content label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .modal-content textarea {
+            height: 60px;
+            resize: vertical;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .modal-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .save-btn {
+            background: #3498db;
+            color: #fff;
+        }
+        .save-btn:hover {
+            background: #2980b9;
+        }
+        .cancel-btn {
+            background: #ecf0f1;
+            color: #333;
+        }
+        .cancel-btn:hover {
+            background: #dfe6e9;
+        }
     </style>
 </head>
 <body>
@@ -139,11 +218,11 @@
                     </div>
                 </div>
                 <div class="card-buttons">
-                    <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                    <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
                 </div>
             </div>
-            <div class="add-card" onclick="addCard('submit')">+ Tambah Jurnal</div>
+            <div class="add-card" onclick="openAddModal('submit')">+ Tambah Jurnal</div>
         </div>
 
         <!-- Kolom Confirm -->
@@ -164,11 +243,38 @@
                     </div>
                 </div>
                 <div class="card-buttons">
-                    <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                    <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
                 </div>
             </div>
-            <div class="add-card" onclick="addCard('confirm')">+ Tambah Jurnal</div>
+            <div class="add-card" onclick="openAddModal('confirm')">+ Tambah Jurnal</div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Tambah/Edit -->
+    <div class="modal" id="jurnalModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Tambah Jurnal</h3>
+            <label for="tanggal">Tanggal:</label>
+            <input type="text" id="tanggal" placeholder="DD MMMM YYYY">
+            <label for="kelas">Kelas:</label>
+            <input type="text" id="kelas" placeholder="X-A">
+            <label for="sakit">Sakit:</label>
+            <input type="text" id="sakit" placeholder="0 siswa">
+            <label for="ijin">Ijin:</label>
+            <input type="text" id="ijin" placeholder="0 siswa">
+            <label for="bolos">Bolos:</label>
+            <input type="text" id="bolos" placeholder="0 siswa">
+            <label for="do">Do:</label>
+            <textarea id="do" placeholder="Rencana mengajar..."></textarea>
+            <label for="doing">Doing:</label>
+            <textarea id="doing" placeholder="Kendala yang dihadapi..."></textarea>
+            <label for="done">Done:</label>
+            <textarea id="done" placeholder="Pencapaian vs prosem..."></textarea>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeModal()">Batal</button>
+                <button class="save-btn" id="saveButton">Simpan</button>
+            </div>
         </div>
     </div>
 
@@ -198,45 +304,67 @@
 
         setupDragAndDrop();
 
-        // Edit Card
-        function editCard(button) {
-            const card = button.closest('.card');
-            const content = card.querySelector('.card-content');
-            const currentData = content.innerHTML.match(/<strong>.*?:<\/strong>\s*([^<]+)(?:<br>|$)/g).map(line => line.replace(/<strong>.*?:<\/strong>\s*/, '').trim());
-            const [tanggal, kelas, sakit, ijin, bolos, , doText, doingText, doneText] = currentData;
+        // Modal Handling
+        const modal = document.getElementById('jurnalModal');
+        let currentCard = null;
+        let currentColumnId = null;
 
-            const newData = prompt('Edit jurnal (pisahkan dengan baris baru):\nTanggal\nKelas\nSakit\nIjin\nBolos\nDo\nDoing\nDone', `${tanggal}\n${kelas}\n${sakit}\n${ijin}\n${bolos}\n${doText}\n${doingText}\n${doneText}`);
-            if (newData) {
-                const [newTanggal, newKelas, newSakit, newIjin, newBolos, newDo, newDoing, newDone] = newData.split('\n');
-                content.innerHTML = `
-                    <strong>Tanggal:</strong> ${newTanggal}<br>
-                    <strong>Kelas:</strong> ${newKelas}<br>
-                    <strong>Sakit:</strong> ${newSakit}<br>
-                    <strong>Ijin:</strong> ${newIjin}<br>
-                    <strong>Bolos:</strong> ${newBolos}<br>
-                    <strong>Isi Jurnal:</strong>
-                    <div class="sub-section">
-                        <strong>Do:</strong> ${newDo}<br>
-                        <strong>Doing:</strong> ${newDoing}<br>
-                        <strong>Done:</strong> ${newDone}
-                    </div>
-                `;
-            }
+        function openAddModal(columnId) {
+            currentColumnId = columnId;
+            currentCard = null;
+            document.getElementById('modalTitle').textContent = 'Tambah Jurnal';
+            clearModalFields();
+            modal.style.display = 'flex';
+            document.getElementById('saveButton').onclick = saveNewCard;
         }
 
-        // Delete Card
-        function deleteCard(button) {
-            if (confirm('Hapus jurnal ini?')) {
-                button.closest('.card').remove();
-            }
+        function openEditModal(button) {
+            currentCard = button.closest('.card');
+            const content = currentCard.querySelector('.card-content');
+            const data = content.innerHTML.match(/<strong>.*?:<\/strong>\s*([^<]+)(?:<br>|$)/g).map(line => line.replace(/<strong>.*?:<\/strong>\s*/, '').trim());
+            const [tanggal, kelas, sakit, ijin, bolos, , doText, doingText, doneText] = data;
+
+            document.getElementById('modalTitle').textContent = 'Edit Jurnal';
+            document.getElementById('tanggal').value = tanggal;
+            document.getElementById('kelas').value = kelas;
+            document.getElementById('sakit').value = sakit;
+            document.getElementById('ijin').value = ijin;
+            document.getElementById('bolos').value = bolos;
+            document.getElementById('do').value = doText;
+            document.getElementById('doing').value = doingText;
+            document.getElementById('done').value = doneText;
+
+            modal.style.display = 'flex';
+            document.getElementById('saveButton').onclick = saveEditedCard;
         }
 
-        // Add Card
-        function addCard(columnId) {
-            const column = document.getElementById(columnId);
-            const newData = prompt('Masukkan jurnal baru (pisahkan dengan baris baru):\nTanggal\nKelas\nSakit\nIjin\nBolos\nDo\nDoing\nDone', 'DD MMMM YYYY\n-\n0 siswa\n0 siswa\n0 siswa\n-\n-\n-');
-            if (newData) {
-                const [tanggal, kelas, sakit, ijin, bolos, doText, doingText, doneText] = newData.split('\n');
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function clearModalFields() {
+            document.getElementById('tanggal').value = '';
+            document.getElementById('kelas').value = '';
+            document.getElementById('sakit').value = '';
+            document.getElementById('ijin').value = '';
+            document.getElementById('bolos').value = '';
+            document.getElementById('do').value = '';
+            document.getElementById('doing').value = '';
+            document.getElementById('done').value = '';
+        }
+
+        function saveNewCard() {
+            const tanggal = document.getElementById('tanggal').value;
+            const kelas = document.getElementById('kelas').value;
+            const sakit = document.getElementById('sakit').value;
+            const ijin = document.getElementById('ijin').value;
+            const bolos = document.getElementById('bolos').value;
+            const doText = document.getElementById('do').value;
+            const doingText = document.getElementById('doing').value;
+            const doneText = document.getElementById('done').value;
+
+            if (tanggal && kelas) {
+                const column = document.getElementById(currentColumnId);
                 const newCard = document.createElement('div');
                 newCard.className = 'card';
                 newCard.draggable = true;
@@ -244,23 +372,63 @@
                     <div class="card-content">
                         <strong>Tanggal:</strong> ${tanggal}<br>
                         <strong>Kelas:</strong> ${kelas}<br>
-                        <strong>Sakit:</strong> ${sakit}<br>
-                        <strong>Ijin:</strong> ${ijin}<br>
-                        <strong>Bolos:</strong> ${bolos}<br>
+                        <strong>Sakit:</strong> ${sakit || '0 siswa'}<br>
+                        <strong>Ijin:</strong> ${ijin || '0 siswa'}<br>
+                        <strong>Bolos:</strong> ${bolos || '0 siswa'}<br>
                         <strong>Isi Jurnal:</strong>
                         <div class="sub-section">
-                            <strong>Do:</strong> ${doText}<br>
-                            <strong>Doing:</strong> ${doingText}<br>
-                            <strong>Done:</strong> ${doneText}
+                            <strong>Do:</strong> ${doText || '-'}<br>
+                            <strong>Doing:</strong> ${doingText || '-'}<br>
+                            <strong>Done:</strong> ${doneText || '-'}
                         </div>
                     </div>
                     <div class="card-buttons">
-                        <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                        <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                         <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
                     </div>
                 `;
                 column.insertBefore(newCard, column.querySelector('.add-card'));
                 setupDragAndDrop();
+                closeModal();
+            } else {
+                alert('Tanggal dan Kelas wajib diisi!');
+            }
+        }
+
+        function saveEditedCard() {
+            const tanggal = document.getElementById('tanggal').value;
+            const kelas = document.getElementById('kelas').value;
+            const sakit = document.getElementById('sakit').value;
+            const ijin = document.getElementById('ijin').value;
+            const bolos = document.getElementById('bolos').value;
+            const doText = document.getElementById('do').value;
+            const doingText = document.getElementById('doing').value;
+            const doneText = document.getElementById('done').value;
+
+            if (tanggal && kelas) {
+                currentCard.querySelector('.card-content').innerHTML = `
+                    <strong>Tanggal:</strong> ${tanggal}<br>
+                    <strong>Kelas:</strong> ${kelas}<br>
+                    <strong>Sakit:</strong> ${sakit || '0 siswa'}<br>
+                    <strong>Ijin:</strong> ${ijin || '0 siswa'}<br>
+                    <strong>Bolos:</strong> ${bolos || '0 siswa'}<br>
+                    <strong>Isi Jurnal:</strong>
+                    <div class="sub-section">
+                        <strong>Do:</strong> ${doText || '-'}<br>
+                        <strong>Doing:</strong> ${doingText || '-'}<br>
+                        <strong>Done:</strong> ${doneText || '-'}
+                    </div>
+                `;
+                closeModal();
+            } else {
+                alert('Tanggal dan Kelas wajib diisi!');
+            }
+        }
+
+        // Delete Card
+        function deleteCard(button) {
+            if (confirm('Hapus jurnal ini?')) {
+                button.closest('.card').remove();
             }
         }
     </script>
