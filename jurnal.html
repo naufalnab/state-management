@@ -206,11 +206,12 @@
 </head>
 <body>
     <div class="board">
-        <!-- Kolom Submit -->
-        <div class="column" id="submit">
-            <h2>Submit</h2>
+        <!-- Kolom Submitted -->
+        <div class="column" id="submitted">
+            <h2>Submitted</h2>
             <div class="card" draggable="true">
                 <div class="card-content">
+                    <div><strong>Nama Guru:</strong> Budi Santoso</div>
                     <div><strong>Tanggal:</strong> 19 Maret 2025</div>
                     <div><strong>Kelas:</strong> X-A</div>
                     <div><strong>Sakit:</strong> 2 siswa</div>
@@ -228,14 +229,15 @@
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
                 </div>
             </div>
-            <div class="add-card" onclick="openAddModal('submit')">+ Tambah Jurnal</div>
+            <div class="add-card" onclick="openAddModal('submitted')">+ Tambah Jurnal</div>
         </div>
 
-        <!-- Kolom Confirm -->
-        <div class="column" id="confirm">
-            <h2>Confirm</h2>
+        <!-- Kolom Confirmed -->
+        <div class="column" id="confirmed">
+            <h2>Confirmed</h2>
             <div class="card" draggable="true">
                 <div class="card-content">
+                    <div><strong>Nama Guru:</strong> Siti Aminah</div>
                     <div><strong>Tanggal:</strong> 20 Maret 2025</div>
                     <div><strong>Kelas:</strong> XI-B</div>
                     <div><strong>Sakit:</strong> 0 siswa</div>
@@ -247,13 +249,14 @@
                         <div><strong>Doing:</strong> Tidak ada kendala signifikan</div>
                         <div><strong>Done:</strong> 85% target prosem tahunan tercapai</div>
                     </div>
+                    <div><strong>Dikonfirmasi oleh:</strong> Pak Joko</div>
                 </div>
                 <div class="card-buttons">
                     <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
                 </div>
             </div>
-            <div class="add-card" onclick="openAddModal('confirm')">+ Tambah Jurnal</div>
+            <div class="add-card" onclick="openAddModal('confirmed')">+ Tambah Jurnal</div>
         </div>
     </div>
 
@@ -261,6 +264,8 @@
     <div class="modal" id="jurnalModal">
         <div class="modal-content">
             <h3 id="modalTitle">Tambah Jurnal</h3>
+            <label for="namaGuru">Nama Guru:</label>
+            <input type="text" id="namaGuru" placeholder="Nama Guru">
             <label for="tanggal">Tanggal:</label>
             <input type="text" id="tanggal" placeholder="DD MMMM YYYY">
             <label for="kelas">Kelas:</label>
@@ -277,6 +282,8 @@
             <textarea id="doing" placeholder="Kendala yang dihadapi..."></textarea>
             <label for="done">Done:</label>
             <textarea id="done" placeholder="Pencapaian vs prosem..."></textarea>
+            <label for="confirmedBy" id="confirmedByLabel" style="display: none;">Dikonfirmasi oleh:</label>
+            <input type="text" id="confirmedBy" placeholder="Nama pengonfirmasi" style="display: none;">
             <div class="modal-buttons">
                 <button class="cancel-btn" onclick="closeModal()">Batal</button>
                 <button class="save-btn" id="saveButton">Simpan</button>
@@ -304,6 +311,7 @@
                     e.preventDefault();
                     const draggable = document.querySelector('.dragging');
                     column.insertBefore(draggable, column.querySelector('.add-card'));
+                    updateConfirmedBy(draggable, column.id);
                 });
             });
         }
@@ -320,6 +328,7 @@
             currentCard = null;
             document.getElementById('modalTitle').textContent = 'Tambah Jurnal';
             clearModalFields();
+            toggleConfirmedByField(columnId);
             modal.style.display = 'flex';
             document.getElementById('saveButton').onclick = saveNewCard;
         }
@@ -331,16 +340,19 @@
             const subSection = content.querySelector('.sub-section');
             const subFields = subSection ? Array.from(subSection.children) : [];
 
-            const tanggal = mainFields[0].textContent.replace('Tanggal: ', '');
-            const kelas = mainFields[1].textContent.replace('Kelas: ', '');
-            const sakit = mainFields[2].textContent.replace('Sakit: ', '');
-            const ijin = mainFields[3].textContent.replace('Ijin: ', '');
-            const bolos = mainFields[4].textContent.replace('Bolos: ', '');
+            const namaGuru = mainFields[0].textContent.replace('Nama Guru: ', '');
+            const tanggal = mainFields[1].textContent.replace('Tanggal: ', '');
+            const kelas = mainFields[2].textContent.replace('Kelas: ', '');
+            const sakit = mainFields[3].textContent.replace('Sakit: ', '');
+            const ijin = mainFields[4].textContent.replace('Ijin: ', '');
+            const bolos = mainFields[5].textContent.replace('Bolos: ', '');
             const doText = subFields[0] ? subFields[0].textContent.replace('Do: ', '') : '';
             const doingText = subFields[1] ? subFields[1].textContent.replace('Doing: ', '') : '';
             const doneText = subFields[2] ? subFields[2].textContent.replace('Done: ', '') : '';
+            const confirmedBy = mainFields.find(div => div.textContent.startsWith('Dikonfirmasi oleh:'))?.textContent.replace('Dikonfirmasi oleh: ', '') || '';
 
             document.getElementById('modalTitle').textContent = 'Edit Jurnal';
+            document.getElementById('namaGuru').value = namaGuru;
             document.getElementById('tanggal').value = tanggal;
             document.getElementById('kelas').value = kelas;
             document.getElementById('sakit').value = sakit;
@@ -349,7 +361,9 @@
             document.getElementById('do').value = doText;
             document.getElementById('doing').value = doingText;
             document.getElementById('done').value = doneText;
+            document.getElementById('confirmedBy').value = confirmedBy;
 
+            toggleConfirmedByField(currentCard.closest('.column').id);
             modal.style.display = 'flex';
             document.getElementById('saveButton').onclick = saveEditedCard;
         }
@@ -359,6 +373,7 @@
         }
 
         function clearModalFields() {
+            document.getElementById('namaGuru').value = '';
             document.getElementById('tanggal').value = '';
             document.getElementById('kelas').value = '';
             document.getElementById('sakit').value = '';
@@ -367,9 +382,40 @@
             document.getElementById('do').value = '';
             document.getElementById('doing').value = '';
             document.getElementById('done').value = '';
+            document.getElementById('confirmedBy').value = '';
+        }
+
+        function toggleConfirmedByField(columnId) {
+            const confirmedByLabel = document.getElementById('confirmedByLabel');
+            const confirmedByInput = document.getElementById('confirmedBy');
+            if (columnId === 'confirmed') {
+                confirmedByLabel.style.display = 'block';
+                confirmedByInput.style.display = 'block';
+            } else {
+                confirmedByLabel.style.display = 'none';
+                confirmedByInput.style.display = 'none';
+            }
+        }
+
+        function updateConfirmedBy(card, columnId) {
+            const content = card.querySelector('.card-content');
+            let confirmedByDiv = content.querySelector('div:last-child');
+            if (columnId === 'confirmed') {
+                if (!confirmedByDiv.textContent.startsWith('Dikonfirmasi oleh:')) {
+                    const newConfirmedBy = prompt('Masukkan nama pengonfirmasi:');
+                    if (newConfirmedBy) {
+                        confirmedByDiv = document.createElement('div');
+                        confirmedByDiv.innerHTML = `<strong>Dikonfirmasi oleh:</strong> ${newConfirmedBy}`;
+                        content.appendChild(confirmedByDiv);
+                    }
+                }
+            } else if (confirmedByDiv.textContent.startsWith('Dikonfirmasi oleh:')) {
+                confirmedByDiv.remove();
+            }
         }
 
         function saveNewCard() {
+            const namaGuru = document.getElementById('namaGuru').value;
             const tanggal = document.getElementById('tanggal').value;
             const kelas = document.getElementById('kelas').value;
             const sakit = document.getElementById('sakit').value;
@@ -378,14 +424,16 @@
             const doText = document.getElementById('do').value;
             const doingText = document.getElementById('doing').value;
             const doneText = document.getElementById('done').value;
+            const confirmedBy = document.getElementById('confirmedBy').value;
 
-            if (tanggal && kelas) {
+            if (namaGuru && tanggal && kelas) {
                 const column = document.getElementById(currentColumnId);
                 const newCard = document.createElement('div');
                 newCard.className = 'card';
                 newCard.draggable = true;
                 newCard.innerHTML = `
                     <div class="card-content">
+                        <div><strong>Nama Guru:</strong> ${namaGuru}</div>
                         <div><strong>Tanggal:</strong> ${tanggal}</div>
                         <div><strong>Kelas:</strong> ${kelas}</div>
                         <div><strong>Sakit:</strong> ${sakit || '0 siswa'}</div>
@@ -397,6 +445,7 @@
                             <div><strong>Doing:</strong> ${doingText || '-'}</div>
                             <div><strong>Done:</strong> ${doneText || '-'}</div>
                         </div>
+                        ${currentColumnId === 'confirmed' && confirmedBy ? `<div><strong>Dikonfirmasi oleh:</strong> ${confirmedBy}</div>` : ''}
                     </div>
                     <div class="card-buttons">
                         <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
@@ -407,11 +456,12 @@
                 setupDragAndDrop();
                 closeModal();
             } else {
-                alert('Tanggal dan Kelas wajib diisi!');
+                alert('Nama Guru, Tanggal, dan Kelas wajib diisi!');
             }
         }
 
         function saveEditedCard() {
+            const namaGuru = document.getElementById('namaGuru').value;
             const tanggal = document.getElementById('tanggal').value;
             const kelas = document.getElementById('kelas').value;
             const sakit = document.getElementById('sakit').value;
@@ -420,9 +470,12 @@
             const doText = document.getElementById('do').value;
             const doingText = document.getElementById('doing').value;
             const doneText = document.getElementById('done').value;
+            const confirmedBy = document.getElementById('confirmedBy').value;
 
-            if (tanggal && kelas) {
+            if (namaGuru && tanggal && kelas) {
+                const columnId = currentCard.closest('.column').id;
                 currentCard.querySelector('.card-content').innerHTML = `
+                    <div><strong>Nama Guru:</strong> ${namaGuru}</div>
                     <div><strong>Tanggal:</strong> ${tanggal}</div>
                     <div><strong>Kelas:</strong> ${kelas}</div>
                     <div><strong>Sakit:</strong> ${sakit || '0 siswa'}</div>
@@ -434,10 +487,11 @@
                         <div><strong>Doing:</strong> ${doingText || '-'}</div>
                         <div><strong>Done:</strong> ${doneText || '-'}</div>
                     </div>
+                    ${columnId === 'confirmed' && confirmedBy ? `<div><strong>Dikonfirmasi oleh:</strong> ${confirmedBy}</div>` : ''}
                 `;
                 closeModal();
             } else {
-                alert('Tanggal dan Kelas wajib diisi!');
+                alert('Nama Guru, Tanggal, dan Kelas wajib diisi!');
             }
         }
 
