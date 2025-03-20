@@ -399,18 +399,20 @@
 
         function updateConfirmedBy(card, columnId) {
             const content = card.querySelector('.card-content');
-            let confirmedByDiv = content.querySelector('div:last-child');
+            const children = Array.from(content.children);
+            const confirmedByDivIndex = children.findIndex(div => div.textContent.startsWith('Dikonfirmasi oleh:'));
+
             if (columnId === 'confirmed') {
-                if (!confirmedByDiv.textContent.startsWith('Dikonfirmasi oleh:')) {
+                if (confirmedByDivIndex === -1) { // Jika belum ada "Dikonfirmasi oleh"
                     const newConfirmedBy = prompt('Masukkan nama pengonfirmasi:');
                     if (newConfirmedBy) {
-                        confirmedByDiv = document.createElement('div');
+                        const confirmedByDiv = document.createElement('div');
                         confirmedByDiv.innerHTML = `<strong>Dikonfirmasi oleh:</strong> ${newConfirmedBy}`;
                         content.appendChild(confirmedByDiv);
                     }
                 }
-            } else if (confirmedByDiv.textContent.startsWith('Dikonfirmasi oleh:')) {
-                confirmedByDiv.remove();
+            } else if (columnId === 'submitted' && confirmedByDivIndex !== -1) { // Jika digeser ke Submitted dan ada "Dikonfirmasi oleh"
+                children[confirmedByDivIndex].remove();
             }
         }
 
