@@ -3,240 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trello Guru Modern</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            margin: 0;
-            padding: 20px;
-            color: #fff;
-        }
-        .board {
-            display: flex;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .column {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            width: 320px;
-            padding: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            min-height: 200px;
-            transition: transform 0.3s ease;
-        }
-        .column:hover {
-            transform: translateY(-5px);
-        }
-        .column h2 {
-            font-size: 20px;
-            margin: 0 0 15px;
-            padding: 8px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            cursor: move;
-            user-select: none;
-            color: #333;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateY(-3px);
-        }
-        .card.dragging {
-            opacity: 0.6;
-            transform: scale(0.98);
-        }
-        .card-content {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .card-buttons {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-        }
-        .card-buttons button {
-            background: none;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-        .edit-btn {
-            background: #4caf50;
-        }
-        .edit-btn:hover {
-            background: #45a049;
-        }
-        .delete-btn {
-            background: #f44336;
-        }
-        .delete-btn:hover {
-            background: #da190b;
-        }
-        .add-card {
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        .add-card:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-    </style>
+    <title>Jurnal Guru Modern</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <div class="board">
-        <!-- Kolom Submit -->
-        <div class="column" id="submit">
-            <h2>Submit</h2>
+        <!-- Kolom Submitted -->
+        <div class="column" id="submitted">
+            <h2>Submitted</h2>
             <div class="card" draggable="true">
                 <div class="card-content">
-                    <strong>Tahun Ajar:</strong> 2024/2025<br>
-                    <strong>Semester:</strong> Ganjil<br>
-                    <strong>Pelajaran:</strong> Matematika<br>
-                    <strong>Kelas:</strong> X-A<br>
-                    <strong>Pengajar:</strong> Budi Santoso<br>
-                    <strong>Tipe:</strong> RPP
+                    <div><strong>Nama Guru:</strong> Budi Santoso</div>
+                    <div><strong>Tanggal:</strong> 19 Maret 2025</div>
+                    <div><strong>Kelas:</strong> X-A</div>
+                    <div><strong>Sakit:</strong> 2 siswa</div>
+                    <div><strong>Ijin:</strong> 1 siswa</div>
+                    <div><strong>Bolos:</strong> 0 siswa</div>
+                    <div><strong>Isi Jurnal:</strong></div>
+                    <div class="sub-section">
+                        <div><strong>Do:</strong> Mengajar fungsi kuadrat dan grafiknya</div>
+                        <div><strong>Doing:</strong> Siswa sulit memahami rumus vertex</div>
+                        <div><strong>Done:</strong> 70% target prosem tahunan tercapai</div>
+                    </div>
                 </div>
                 <div class="card-buttons">
-                    <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                    <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
                 </div>
             </div>
-            <div class="add-card" onclick="addCard('submit')">+ Tambah Tugas</div>
+            <div class="add-card" onclick="openAddModal('submitted')">+ Tambah Jurnal</div>
         </div>
 
-        <!-- Kolom Confirm -->
-        <div class="column" id="confirm">
-            <h2>Confirm</h2>
+        <!-- Kolom Confirmed -->
+        <div class="column" id="confirmed">
+            <h2>Confirmed</h2>
             <div class="card" draggable="true">
                 <div class="card-content">
-                    <strong>Tahun Ajar:</strong> 2024/2025<br>
-                    <strong>Semester:</strong> Genap<br>
-                    <strong>Pelajaran:</strong> Bahasa Inggris<br>
-                    <strong>Kelas:</strong> XI-B<br>
-                    <strong>Pengajar:</strong> Siti Aminah<br>
-                    <strong>Tipe:</strong> Soal
+                    <div><strong>Nama Guru:</strong> Siti Aminah</div>
+                    <div><strong>Tanggal:</strong> 20 Maret 2025</div>
+                    <div><strong>Kelas:</strong> XI-B</div>
+                    <div><strong>Sakit:</strong> 0 siswa</div>
+                    <div><strong>Ijin:</strong> 0 siswa</div>
+                    <div><strong>Bolos:</strong> 1 siswa</div>
+                    <div><strong>Isi Jurnal:</strong></div>
+                    <div class="sub-section">
+                        <div><strong>Do:</strong> Mengajar tenses bahasa Inggris</div>
+                        <div><strong>Doing:</strong> Tidak ada kendala signifikan</div>
+                        <div><strong>Done:</strong> 85% target prosem tahunan tercapai</div>
+                    </div>
+                    <div><strong>Dikonfirmasi oleh:</strong> Pak Joko</div>
                 </div>
                 <div class="card-buttons">
-                    <button class="edit-btn" onclick="editCard(this)">✏️</button>
+                    <button class="edit-btn" onclick="openEditModal(this)">✏️</button>
                     <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
                 </div>
             </div>
-            <div class="add-card" onclick="addCard('confirm')">+ Tambah Tugas</div>
+            <div class="add-card" onclick="openAddModal('confirmed')">+ Tambah Jurnal</div>
         </div>
     </div>
 
-    <script>
-        // Drag and Drop
-        const cards = document.querySelectorAll('.card');
-        const columns = document.querySelectorAll('.column');
+    <!-- Modal untuk Tambah/Edit -->
+    <div class="modal" id="jurnalModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Tambah Jurnal</h3>
+            <label for="namaGuru">Nama Guru:</label>
+            <input type="text" id="namaGuru" placeholder="Nama Guru">
+            <label for="tanggal">Tanggal:</label>
+            <input type="text" id="tanggal" placeholder="DD MMMM YYYY">
+            <label for="kelas">Kelas:</label>
+            <input type="text" id="kelas" placeholder="X-A">
+            <label for="sakit">Sakit:</label>
+            <input type="text" id="sakit" placeholder="0 siswa">
+            <label for="ijin">Ijin:</label>
+            <input type="text" id="ijin" placeholder="0 siswa">
+            <label for="bolos">Bolos:</label>
+            <input type="text" id="bolos" placeholder="0 siswa">
+            <label for="do">Do:</label>
+            <textarea id="do" placeholder="Rencana mengajar..."></textarea>
+            <label for="doing">Doing:</label>
+            <textarea id="doing" placeholder="Kendala yang dihadapi..."></textarea>
+            <label for="done">Done:</label>
+            <textarea id="done" placeholder="Pencapaian vs prosem..."></textarea>
+            <label for="confirmedBy" id="confirmedByLabel" style="display: none;">Dikonfirmasi oleh:</label>
+            <input type="text" id="confirmedBy" placeholder="Nama pengonfirmasi" style="display: none;">
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeModal()">Batal</button>
+                <button class="save-btn" id="saveButton">Simpan</button>
+            </div>
+        </div>
+    </div>
 
-        function setupDragAndDrop() {
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('dragstart', () => {
-                    card.classList.add('dragging');
-                });
-                card.addEventListener('dragend', () => {
-                    card.classList.remove('dragging');
-                });
-            });
-
-            columns.forEach(column => {
-                column.addEventListener('dragover', e => {
-                    e.preventDefault();
-                });
-                column.addEventListener('drop', e => {
-                    e.preventDefault();
-                    const draggable = document.querySelector('.dragging');
-                    column.insertBefore(draggable, column.querySelector('.add-card'));
-                });
-            });
-        }
-
-        setupDragAndDrop();
-
-        // Edit Card
-        function editCard(button) {
-            const card = button.closest('.card');
-            const content = card.querySelector('.card-content');
-            const currentData = content.innerHTML.split('<br>').map(line => line.replace(/<strong>.*:<\/strong>\s*/, '').trim());
-
-            const newData = prompt('Edit data (pisahkan dengan baris baru):\nTahun Ajar\nSemester\nPelajaran\nKelas\nPengajar\nTipe', currentData.join('\n'));
-            if (newData) {
-                const [tahun, semester, pelajaran, kelas, pengajar, tipe] = newData.split('\n');
-                content.innerHTML = `
-                    <strong>Tahun Ajar:</strong> ${tahun}<br>
-                    <strong>Semester:</strong> ${semester}<br>
-                    <strong>Pelajaran:</strong> ${pelajaran}<br>
-                    <strong>Kelas:</strong> ${kelas}<br>
-                    <strong>Pengajar:</strong> ${pengajar}<br>
-                    <strong>Tipe:</strong> ${tipe}
-                `;
-            }
-        }
-
-        // Delete Card
-        function deleteCard(button) {
-            if (confirm('Hapus kartu ini?')) {
-                button.closest('.card').remove();
-            }
-        }
-
-        // Add Card
-        function addCard(columnId) {
-            const column = document.getElementById(columnId);
-            const newData = prompt('Masukkan data baru (pisahkan dengan baris baru):\nTahun Ajar\nSemester\nPelajaran\nKelas\nPengajar\nTipe', '2024/2025\nGanjil\n-\n-\n-\n-');
-            if (newData) {
-                const [tahun, semester, pelajaran, kelas, pengajar, tipe] = newData.split('\n');
-                const newCard = document.createElement('div');
-                newCard.className = 'card';
-                newCard.draggable = true;
-                newCard.innerHTML = `
-                    <div class="card-content">
-                        <strong>Tahun Ajar:</strong> ${tahun}<br>
-                        <strong>Semester:</strong> ${semester}<br>
-                        <strong>Pelajaran:</strong> ${pelajaran}<br>
-                        <strong>Kelas:</strong> ${kelas}<br>
-                        <strong>Pengajar:</strong> ${pengajar}<br>
-                        <strong>Tipe:</strong> ${tipe}
-                    </div>
-                    <div class="card-buttons">
-                        <button class="edit-btn" onclick="editCard(this)">✏️</button>
-                        <button class="delete-btn" onclick="deleteCard(this)">🗑️</button>
-                    </div>
-                `;
-                column.insertBefore(newCard, column.querySelector('.add-card'));
-                setupDragAndDrop(); // Re-apply drag-and-drop untuk kartu baru
-            }
-        }
-    </script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>
