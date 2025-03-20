@@ -66,6 +66,9 @@
             font-size: 14px;
             line-height: 1.6;
         }
+        .card-content div {
+            margin-bottom: 8px;
+        }
         .card-content strong {
             color: #2c3e50;
         }
@@ -73,6 +76,9 @@
             margin-top: 10px;
             padding-left: 10px;
             border-left: 2px solid #3498db;
+        }
+        .sub-section div {
+            margin-bottom: 8px;
         }
         .card-buttons {
             position: absolute;
@@ -205,16 +211,16 @@
             <h2>Submit</h2>
             <div class="card" draggable="true">
                 <div class="card-content">
-                    <strong>Tanggal:</strong> 19 Maret 2025<br>
-                    <strong>Kelas:</strong> X-A<br>
-                    <strong>Sakit:</strong> 2 siswa<br>
-                    <strong>Ijin:</strong> 1 siswa<br>
-                    <strong>Bolos:</strong> 0 siswa<br>
-                    <strong>Isi Jurnal:</strong>
+                    <div><strong>Tanggal:</strong> 19 Maret 2025</div>
+                    <div><strong>Kelas:</strong> X-A</div>
+                    <div><strong>Sakit:</strong> 2 siswa</div>
+                    <div><strong>Ijin:</strong> 1 siswa</div>
+                    <div><strong>Bolos:</strong> 0 siswa</div>
+                    <div><strong>Isi Jurnal:</strong></div>
                     <div class="sub-section">
-                        <strong>Do:</strong> Mengajar fungsi kuadrat dan grafiknya<br>
-                        <strong>Doing:</strong> Siswa sulit memahami rumus vertex<br>
-                        <strong>Done:</strong> 70% target prosem tahunan tercapai
+                        <div><strong>Do:</strong> Mengajar fungsi kuadrat dan grafiknya</div>
+                        <div><strong>Doing:</strong> Siswa sulit memahami rumus vertex</div>
+                        <div><strong>Done:</strong> 70% target prosem tahunan tercapai</div>
                     </div>
                 </div>
                 <div class="card-buttons">
@@ -230,16 +236,16 @@
             <h2>Confirm</h2>
             <div class="card" draggable="true">
                 <div class="card-content">
-                    <strong>Tanggal:</strong> 20 Maret 2025<br>
-                    <strong>Kelas:</strong> XI-B<br>
-                    <strong>Sakit:</strong> 0 siswa<br>
-                    <strong>Ijin:</strong> 0 siswa<br>
-                    <strong>Bolos:</strong> 1 siswa<br>
-                    <strong>Isi Jurnal:</strong>
+                    <div><strong>Tanggal:</strong> 20 Maret 2025</div>
+                    <div><strong>Kelas:</strong> XI-B</div>
+                    <div><strong>Sakit:</strong> 0 siswa</div>
+                    <div><strong>Ijin:</strong> 0 siswa</div>
+                    <div><strong>Bolos:</strong> 1 siswa</div>
+                    <div><strong>Isi Jurnal:</strong></div>
                     <div class="sub-section">
-                        <strong>Do:</strong> Mengajar tenses bahasa Inggris<br>
-                        <strong>Doing:</strong> Tidak ada kendala signifikan<br>
-                        <strong>Done:</strong> 85% target prosem tahunan tercapai
+                        <div><strong>Do:</strong> Mengajar tenses bahasa Inggris</div>
+                        <div><strong>Doing:</strong> Tidak ada kendala signifikan</div>
+                        <div><strong>Done:</strong> 85% target prosem tahunan tercapai</div>
                     </div>
                 </div>
                 <div class="card-buttons">
@@ -321,7 +327,9 @@
         function openEditModal(button) {
             currentCard = button.closest('.card');
             const content = currentCard.querySelector('.card-content');
-            const data = content.innerHTML.match(/<strong>.*?:<\/strong>\s*([^<]+)(?:<br>|$)/g).map(line => line.replace(/<strong>.*?:<\/strong>\s*/, '').trim());
+            const data = Array.from(content.querySelectorAll('div:not(.sub-section) div, .sub-section div'))
+                .map(div => div.textContent.replace(/.*?:\s*/, '').trim());
+
             const [tanggal, kelas, sakit, ijin, bolos, , doText, doingText, doneText] = data;
 
             document.getElementById('modalTitle').textContent = 'Edit Jurnal';
@@ -370,16 +378,16 @@
                 newCard.draggable = true;
                 newCard.innerHTML = `
                     <div class="card-content">
-                        <strong>Tanggal:</strong> ${tanggal}<br>
-                        <strong>Kelas:</strong> ${kelas}<br>
-                        <strong>Sakit:</strong> ${sakit || '0 siswa'}<br>
-                        <strong>Ijin:</strong> ${ijin || '0 siswa'}<br>
-                        <strong>Bolos:</strong> ${bolos || '0 siswa'}<br>
-                        <strong>Isi Jurnal:</strong>
+                        <div><strong>Tanggal:</strong> ${tanggal}</div>
+                        <div><strong>Kelas:</strong> ${kelas}</div>
+                        <div><strong>Sakit:</strong> ${sakit || '0 siswa'}</div>
+                        <div><strong>Ijin:</strong> ${ijin || '0 siswa'}</div>
+                        <div><strong>Bolos:</strong> ${bolos || '0 siswa'}</div>
+                        <div><strong>Isi Jurnal:</strong></div>
                         <div class="sub-section">
-                            <strong>Do:</strong> ${doText || '-'}<br>
-                            <strong>Doing:</strong> ${doingText || '-'}<br>
-                            <strong>Done:</strong> ${doneText || '-'}
+                            <div><strong>Do:</strong> ${doText || '-'}</div>
+                            <div><strong>Doing:</strong> ${doingText || '-'}</div>
+                            <div><strong>Done:</strong> ${doneText || '-'}</div>
                         </div>
                     </div>
                     <div class="card-buttons">
@@ -407,16 +415,16 @@
 
             if (tanggal && kelas) {
                 currentCard.querySelector('.card-content').innerHTML = `
-                    <strong>Tanggal:</strong> ${tanggal}<br>
-                    <strong>Kelas:</strong> ${kelas}<br>
-                    <strong>Sakit:</strong> ${sakit || '0 siswa'}<br>
-                    <strong>Ijin:</strong> ${ijin || '0 siswa'}<br>
-                    <strong>Bolos:</strong> ${bolos || '0 siswa'}<br>
-                    <strong>Isi Jurnal:</strong>
+                    <div><strong>Tanggal:</strong> ${tanggal}</div>
+                    <div><strong>Kelas:</strong> ${kelas}</div>
+                    <div><strong>Sakit:</strong> ${sakit || '0 siswa'}</div>
+                    <div><strong>Ijin:</strong> ${ijin || '0 siswa'}</div>
+                    <div><strong>Bolos:</strong> ${bolos || '0 siswa'}</div>
+                    <div><strong>Isi Jurnal:</strong></div>
                     <div class="sub-section">
-                        <strong>Do:</strong> ${doText || '-'}<br>
-                        <strong>Doing:</strong> ${doingText || '-'}<br>
-                        <strong>Done:</strong> ${doneText || '-'}
+                        <div><strong>Do:</strong> ${doText || '-'}</div>
+                        <div><strong>Doing:</strong> ${doingText || '-'}</div>
+                        <div><strong>Done:</strong> ${doneText || '-'}</div>
                     </div>
                 `;
                 closeModal();
